@@ -1,25 +1,31 @@
-﻿import React from "react";
-import { Navbar } from "@/components/landing/Navbar";
-import { Hero } from "@/components/landing/Hero";
-import { CodeSection } from "@/components/landing/CodeSection";
-import { BenchmarkSection } from "@/components/landing/BenchmarkSection";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
-import { Footer } from "@/components/landing/Footer";
+import { BentoSection } from "@/components/sections/bento-section";
+import { CodeSection } from "@/components/sections/code-section";
+import { CompanyShowcase } from "@/components/sections/company-showcase";
+import { CTASection } from "@/components/sections/cta-section";
+import { FAQSection } from "@/components/sections/faq-section";
+import { FeatureSection } from "@/components/sections/feature-section";
+import { FooterSection } from "@/components/sections/footer-section";
+import { GrowthSection } from "@/components/sections/growth-section";
+import { HeroSection } from "@/components/sections/hero-section";
+import { PricingSection } from "@/components/sections/pricing-section";
+import { QuoteSection } from "@/components/sections/quote-section";
+import { TestimonialSection } from "@/components/sections/testimonial-section";
 
-export default function LandingPage() {
+export default function Home() {
   return (
-    <div className="min-h-screen" style={{ background: "#08080f", color: "var(--text-primary)" }}>
-      <Navbar />
-      <main>
-        <Hero />
-        <CodeSection />
-        <BenchmarkSection />
-        <HowItWorks />
-        <FeaturesGrid />
-      </main>
-      <Footer />
-    </div>
+    <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
+      <HeroSection />
+      <CompanyShowcase />
+      <BentoSection />
+      <CodeSection />
+      <QuoteSection />
+      <FeatureSection />
+      <GrowthSection />
+      <PricingSection />
+      <TestimonialSection />
+      <FAQSection />
+      <CTASection />
+      <FooterSection />
+    </main>
   );
 }
-

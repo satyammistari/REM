@@ -1,87 +1,70 @@
-/**
- * Shared utility functions for the REM dashboard.
- */
+import { clsx, type ClassValue } from "clsx";
+import * as Color from "color-bits";
+import { twMerge } from "tailwind-merge";
 
-/** Format an ISO timestamp as a relative time string (e.g. "3m ago"). */
-export function relativeTime(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const s = Math.floor(diff / 1000);
-  if (s < 60) return `${s}s ago`;
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const d = Math.floor(h / 24);
-  return `${d}d ago`;
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
-/** Format a number with K/M suffix (e.g. 1200 → "1.2K"). */
-export function formatCount(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
-}
+// Helper function to convert any CSS color to rgba
+export const getRGBA = (
+  cssColor: React.CSSProperties["color"],
+  fallback: string = "rgba(180, 180, 180)",
+): string => {
+  if (typeof window === "undefined") return fallback;
+  if (!cssColor) return fallback;
 
-/** Truncate a string to maxLen, appending "…" if needed. */
-export function truncate(s: string, maxLen: number): string {
-  if (s.length <= maxLen) return s;
-  return s.slice(0, maxLen - 1) + "…";
-}
-
-/** Clamp a number between min and max (inclusive). */
-export function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-/** Convert an importance score (0–1) to a colour hex string. */
-export function importanceColor(score: number): string {
-  if (score >= 0.8) return "#a78bfa"; // violet
-  if (score >= 0.6) return "#60a5fa"; // blue
-  if (score >= 0.4) return "#34d399"; // green
-  return "#64748b"; // muted
-}
-
-/** Domain → display colour mapping. */
-export const DOMAIN_COLORS: Record<string, string> = {
-  coding: "#a78bfa",
-  writing: "#60a5fa",
-  research: "#34d399",
-  planning: "#fb923c",
-  analysis: "#f472b6",
-  communication: "#facc15",
-  general: "#94a3b8",
-};
-
-/** Outcome → colour mapping. */
-export const OUTCOME_COLORS: Record<string, string> = {
-  success: "#10b981",
-  failure: "#ef4444",
-  partial: "#f59e0b",
-  unknown: "#64748b",
-};
-
-/** Format latency in ms to a human-readable string. */
-export function formatLatency(ms: number): string {
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(2)}s`;
-}
-
-/** Convert a snake_case or camelCase string to Title Case. */
-export function toTitleCase(s: string): string {
-  return s
-    .replace(/_/g, " ")
-    .replace(/([A-Z])/g, " $1")
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .trim();
-}
-
-/** Build query-string from an object, omitting undefined/null values. */
-export function buildQuery(params: Record<string, string | number | boolean | undefined | null>): string {
-  const pairs: string[] = [];
-  for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== null && v !== "") {
-      pairs.push(`${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`);
+  try {
+    // Handle CSS variables
+    if (typeof cssColor === "string" && cssColor.startsWith("var(")) {
+      const element = document.createElement("div");
+      element.style.color = cssColor;
+      document.body.appendChild(element);
+      const computedColor = window.getComputedStyle(element).color;
+      document.body.removeChild(element);
+      return Color.formatRGBA(Color.parse(computedColor));
     }
+
+    return Color.formatRGBA(Color.parse(cssColor));
+  } catch (e) {
+    console.error("Color parsing failed:", e);
+    return fallback;
   }
-  return pairs.length ? `?${pairs.join("&")}` : "";
-}
+};
+
+// Helper function to add opacity to an RGB color string
+export const colorWithOpacity = (color: string, opacity: number): string => {
+  if (!color.startsWith("rgb")) return color;
+  return Color.formatRGBA(Color.alpha(Color.parse(color), opacity));
+};
+
+// Tremor Raw focusInput [v0.0.1]
+
+export const focusInput = [
+  // base
+  "focus:ring-2",
+  // ring color
+  "focus:ring-blue-200 focus:dark:ring-blue-700/30",
+  // border color
+  "focus:border-blue-500 focus:dark:border-blue-700",
+];
+
+// Tremor Raw focusRing [v0.0.1]
+
+export const focusRing = [
+  // base
+  "outline outline-offset-2 outline-0 focus-visible:outline-2",
+  // outline color
+  "outline-blue-500 dark:outline-blue-500",
+];
+
+// Tremor Raw hasErrorInput [v0.0.1]
+
+export const hasErrorInput = [
+  // base
+  "ring-2",
+  // border color
+  "border-red-500 dark:border-red-700",
+  // ring color
+  "ring-red-200 dark:ring-red-700/30",
+];
