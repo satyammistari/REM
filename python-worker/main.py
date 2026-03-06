@@ -54,8 +54,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         )
         logger.info("openai_embedding_check_ok")
     except Exception as exc:  # noqa: BLE001
-        logger.error("openai_embedding_check_failed", error=str(exc))
-        raise
+        logger.warning("openai_embedding_check_failed_non_fatal", error=str(exc))
 
     # Initialize services and inject into handler modules
     embed_service = EmbedService(openai_client=openai_client, redis_client=redis_client)
