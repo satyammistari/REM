@@ -1,88 +1,308 @@
-ï»¿"use client";
+"use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { MeshGradient, PulsingBorder } from "@paper-design/shaders-react";
+import { motion } from "framer-motion";
 
 export function Hero() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [email, setEmail] = useState("");
+  const [waitlistState, setWaitlistState] = useState<"idle" | "loading" | "done">("idle");
+
+  // Scroll-reveal for .reveal sections throughout the page
+  useEffect(() => {
+    const revealObs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            revealObs.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => revealObs.observe(el));
+    return () => revealObs.disconnect();
+  }, []);
+
+  const handleWaitlist = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setWaitlistState("loading");
+    try {
+      const stored: string[] = JSON.parse(localStorage.getItem("rem_waitlist") || "[]");
+      if (!stored.includes(email)) stored.push(email);
+      localStorage.setItem("rem_waitlist", JSON.stringify(stored));
+    } catch {}
+    fetch("https://api.getwaitlist.com/api/v1/waiter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, waitlist_id: "rem-memory" }),
+    })
+      .catch(() => {})
+      .finally(() => setWaitlistState("done"));
+  };
+
   return (
-    <section className="relative overflow-hidden pt-20 pb-16 px-6 sm:px-10 max-w-6xl mx-auto">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,#22d3ee_0,#0a0a0f_70%)] opacity-30 blur-3xl" />
-        <div className="absolute -left-40 top-40 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,#6366f1_0,#0a0a0f_70%)] opacity-25 blur-3xl" />
-      </div>
+    <div
+      ref={containerRef}
+      className="relative overflow-hidden"
+      style={{ minHeight: "calc(100vh - 56px)", background: "#000" }}
+    >
+      {/* SVG filters */}
+      <svg className="absolute inset-0 w-0 h-0">
+        <defs>
+          <filter id="glass-effect" x="-50%" y="-50%" width="200%" height="200%">
+            <feTurbulence baseFrequency="0.005" numOctaves="1" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.3" />
+            <feColorMatrix
+              type="matrix"
+              values="1 0 0 0 0.02
+                      0 1 0 0 0.02
+                      0 0 1 0 0.05
+                      0 0 0 0.9 0"
+              result="tint"
+            />
+          </filter>
+          <filter id="gooey-filter" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+            <feColorMatrix
+              in="blur"
+              mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"
+              result="gooey"
+            />
+            <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
+          </filter>
+          <filter id="text-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <linearGradient id="hero-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="30%" stopColor="#7c3aed" />
+            <stop offset="70%" stopColor="#06b6d4" />
+            <stop offset="100%" stopColor="#ffffff" />
+          </linearGradient>
+        </defs>
+      </svg>
 
-      <div className="relative grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-10 items-center">
-        <div className="space-y-6 animate-slide-up">
-          <p className="font-mono text-[11px] tracking-widest text-[var(--text-secondary)] uppercase">
-            Open Source Â· v0.1.0 Beta
-          </p>
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl leading-tight">
+      {/* Mesh gradient layers */}
+      <MeshGradient
+        className="absolute inset-0 w-full h-full"
+        colors={["#000000", "#7c3aed", "#06b6d4", "#1e1e30", "#4c1d95"]}
+        speed={0.3}
+      />
+      <MeshGradient
+        className="absolute inset-0 w-full h-full opacity-40"
+        colors={["#000000", "#7c3aed", "#06b6d4", "#f97316"]}
+        speed={0.2}
+      />
+
+      {/* Main content */}
+      <main className="absolute bottom-8 left-8 z-20 max-w-2xl">
+        {/* Eyebrow badge */}
+        <motion.div
+          className="inline-flex items-center px-4 py-2 rounded-full mb-6 relative"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            filter: "url(#glass-effect)",
+          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <div className="absolute top-0 left-1 right-1 h-px rounded-full"
+            style={{ background: "linear-gradient(90deg,transparent,rgba(124,58,237,0.4),transparent)" }} />
+          <span className="text-white/90 text-sm font-medium relative z-10 tracking-wide font-mono">
+            ?? #1 on LongMemEval · LoCoMo · ConvoMem
+          </span>
+        </motion.div>
+
+        {/* H1 */}
+        <motion.h1
+          className="font-bold text-white mb-4 leading-none tracking-tight"
+          style={{ fontSize: "clamp(42px,6vw,80px)" }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <span className="block font-normal" style={{ color: "rgba(255,255,255,0.9)" }}>
             Your AI Agents
-            <br />
-            <span className="bg-clip-text text-transparent bg-[linear-gradient(90deg,#6366f1,#22d3ee)]">
-              Have Amnesia.
-            </span>
-          </h1>
-          <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-xl">
-            REM is the memory operating system for AI agents. Persistent episodic storage,
-            recursive consolidation, and instant retrieval â€” built for production workloads.
-          </p>
+          </span>
+          <motion.span
+            className="block font-black"
+            style={{
+              background: "linear-gradient(135deg,#7c3aed 0%,#06b6d4 50%,#7c3aed 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              filter: "url(#text-glow)",
+              backgroundSize: "200% 200%",
+            }}
+            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          >
+            Have Amnesia.
+          </motion.span>
+        </motion.h1>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[var(--accent-indigo)] text-sm font-medium text-white shadow-lg hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] transition-shadow"
-            >
-              Get Started Free â†’
-            </Link>
-            <Link
-              href="https://github.com/yourusername/rem"
-              className="inline-flex items-center justify-center px-4 py-2 rounded-full border border-[var(--border-bright)] text-xs font-mono text-[var(--text-secondary)] hover:bg-[rgba(15,23,42,0.9)]"
-            >
-              View on GitHub
-            </Link>
+        {/* Sub-heading */}
+        <motion.p
+          className="font-semibold mb-2"
+          style={{ fontSize: "clamp(20px,2.5vw,30px)", color: "rgba(255,255,255,0.75)" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+        >
+          REM fixes that.
+        </motion.p>
+        <motion.p
+          className="font-light mb-8 leading-relaxed max-w-xl"
+          style={{ fontSize: 17, color: "rgba(255,255,255,0.55)", fontFamily: "'Instrument Sans',sans-serif" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.9 }}
+        >
+          Recursive episodic memory with automatic consolidation.
+          The memory OS for AI agents. One API.
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div
+          className="flex flex-col items-start gap-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.0 }}
+        >
+          <div className="flex items-center gap-4 flex-wrap">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm text-white"
+                style={{ background: "linear-gradient(135deg,#7c3aed,#06b6d4)", boxShadow: "0 0 30px rgba(124,58,237,0.4)" }}
+              >
+                Start Building Free
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <a
+                href="https://github.com/satyammistari/REM"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-medium text-sm"
+                style={{
+                  background: "transparent",
+                  border: "2px solid rgba(255,255,255,0.25)",
+                  color: "white",
+                  backdropFilter: "blur(4px)",
+                }}
+              >
+                View on GitHub
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </motion.div>
           </div>
 
-          <p className="text-[11px] text-[var(--text-muted)]">
-            No credit card required Â· Open source Â· Self-hostable
-          </p>
-        </div>
-
-        <div className="relative hidden lg:block">
-          <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(circle_at_top,#22d3ee20,transparent_55%)] pointer-events-none" />
-          <div className="glass rounded-3xl p-5 h-full flex flex-col gap-4 relative">
-            <p className="text-xs text-[var(--text-secondary)] mb-2">
-              Live memory graph snapshot
-            </p>
-            <div className="flex-1 relative overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_top,#0f172a,#020617)]">
-              {/* simple animated nodes, no canvas */}
-              <div className="absolute inset-0">
-                {Array.from({ length: 24 }).map((_, idx) => {
-                  const size = idx % 7 === 0 ? 10 : 6;
-                  const delay = (idx * 0.4).toFixed(1);
-                  return (
-                    <div
-                      key={idx}
-                      className="absolute rounded-full bg-[rgba(148,163,184,0.28)] animate-float"
-                      style={{
-                        width: size,
-                        height: size,
-                        top: `${10 + (idx * 13) % 80}%`,
-                        left: `${5 + (idx * 19) % 90}%`,
-                        animationDelay: `${delay}s`,
-                      }}
-                    />
-                  );
-                })}
+          {/* Waitlist form */}
+          <div className="w-full max-w-md">
+            {waitlistState === "done" ? (
+              <div
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-[13px]"
+                style={{
+                  background: "rgba(124,58,237,0.15)",
+                  border: "1px solid rgba(124,58,237,0.4)",
+                  color: "#a78bfa",
+                  backdropFilter: "blur(8px)",
+                }}
+              >
+                <span style={{ color: "#7c3aed" }}>?</span> You&apos;re on the list! We&apos;ll email you.
               </div>
-              <div className="absolute inset-0 opacity-25">
-                <div className="w-full h-full bg-[radial-gradient(circle_at_center,transparent_0,#020617_60%)]" />
-              </div>
-            </div>
+            ) : (
+              <form onSubmit={handleWaitlist} className="flex gap-2">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="flex-1 px-4 py-2.5 rounded-full font-mono text-[13px] outline-none"
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "#f1f5f9",
+                    backdropFilter: "blur(8px)",
+                    caretColor: "#7c3aed",
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={waitlistState === "loading"}
+                  className="px-5 py-2.5 rounded-full font-semibold text-[13px] text-white disabled:opacity-60"
+                  style={{ background: "#7c3aed", whiteSpace: "nowrap" }}
+                >
+                  {waitlistState === "loading" ? "…" : "Join Waitlist"}
+                </button>
+              </form>
+            )}
           </div>
+
+          <p className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>
+            Open source · MIT License · Self-hostable
+          </p>
+        </motion.div>
+      </main>
+
+      {/* Stats ring — bottom right */}
+      <div className="absolute bottom-8 right-8 z-30">
+        <div className="relative w-20 h-20 flex items-center justify-center">
+          <PulsingBorder
+            colors={["#7c3aed", "#06b6d4", "#a78bfa", "#22d3ee", "#4c1d95"]}
+            colorBack="#00000000"
+            speed={1.5}
+            roundness={1}
+            thickness={0.1}
+            softness={0.2}
+            intensity={5}
+            spotSize={0.1}
+            pulse={0.1}
+            smoke={0.5}
+            smokeSize={4}
+            scale={0.65}
+            rotation={0}
+            frame={9161408}
+            style={{ width: "60px", height: "60px", borderRadius: "50%" }}
+          />
+          <motion.svg
+            className="absolute inset-0 w-full h-full"
+            viewBox="0 0 100 100"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            style={{ transform: "scale(1.6)" }}
+          >
+            <defs>
+              <path id="stats-circle" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0" />
+            </defs>
+            <text style={{ fontSize: "8.5px", fill: "rgba(255,255,255,0.7)", fontFamily: "'IBM Plex Mono',monospace" }}>
+              <textPath href="#stats-circle" startOffset="0%">
+                ? 16.7k Stars • 81.6% Accuracy • &lt;50ms Speed • Open Source •
+              </textPath>
+            </text>
+          </motion.svg>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
-
