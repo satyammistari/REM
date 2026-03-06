@@ -66,16 +66,6 @@ export function Hero() {
               result="tint"
             />
           </filter>
-          <filter id="gooey-filter" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-            <feColorMatrix
-              in="blur"
-              mode="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"
-              result="gooey"
-            />
-            <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
-          </filter>
           <filter id="text-glow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="2" result="coloredBlur" />
             <feMerge>
@@ -83,12 +73,6 @@ export function Hero() {
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-          <linearGradient id="hero-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="30%" stopColor="#7c3aed" />
-            <stop offset="70%" stopColor="#06b6d4" />
-            <stop offset="100%" stopColor="#ffffff" />
-          </linearGradient>
         </defs>
       </svg>
 
@@ -119,10 +103,12 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <div className="absolute top-0 left-1 right-1 h-px rounded-full"
-            style={{ background: "linear-gradient(90deg,transparent,rgba(124,58,237,0.4),transparent)" }} />
+          <div
+            className="absolute top-0 left-1 right-1 h-px rounded-full"
+            style={{ background: "linear-gradient(90deg,transparent,rgba(124,58,237,0.4),transparent)" }}
+          />
           <span className="text-white/90 text-sm font-medium relative z-10 tracking-wide font-mono">
-            ?? #1 on LongMemEval · LoCoMo · ConvoMem
+            #1 on LongMemEval Â· LoCoMo Â· ConvoMem
           </span>
         </motion.div>
 
@@ -171,8 +157,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.9 }}
         >
-          Recursive episodic memory with automatic consolidation.
-          The memory OS for AI agents. One API.
+          Recursive episodic memory with automatic consolidation. The memory OS for AI agents. One API.
         </motion.p>
 
         {/* CTAs */}
@@ -187,7 +172,10 @@ export function Hero() {
               <Link
                 href="/dashboard"
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm text-white"
-                style={{ background: "linear-gradient(135deg,#7c3aed,#06b6d4)", boxShadow: "0 0 30px rgba(124,58,237,0.4)" }}
+                style={{
+                  background: "linear-gradient(135deg,#7c3aed,#06b6d4)",
+                  boxShadow: "0 0 30px rgba(124,58,237,0.4)",
+                }}
               >
                 Start Building Free
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -220,7 +208,7 @@ export function Hero() {
           <div className="w-full max-w-md">
             {waitlistState === "done" ? (
               <div
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-[13px]"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-sm"
                 style={{
                   background: "rgba(124,58,237,0.15)",
                   border: "1px solid rgba(124,58,237,0.4)",
@@ -228,7 +216,7 @@ export function Hero() {
                   backdropFilter: "blur(8px)",
                 }}
               >
-                <span style={{ color: "#7c3aed" }}>?</span> You&apos;re on the list! We&apos;ll email you.
+                <span style={{ color: "#7c3aed" }}>&#10003;</span> You&apos;re on the list! We&apos;ll email you.
               </div>
             ) : (
               <form onSubmit={handleWaitlist} className="flex gap-2">
@@ -238,7 +226,7 @@ export function Hero() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex-1 px-4 py-2.5 rounded-full font-mono text-[13px] outline-none"
+                  className="flex-1 px-4 py-2.5 rounded-full font-mono text-sm outline-none"
                   style={{
                     background: "rgba(255,255,255,0.08)",
                     border: "1px solid rgba(255,255,255,0.15)",
@@ -250,22 +238,22 @@ export function Hero() {
                 <button
                   type="submit"
                   disabled={waitlistState === "loading"}
-                  className="px-5 py-2.5 rounded-full font-semibold text-[13px] text-white disabled:opacity-60"
+                  className="px-5 py-2.5 rounded-full font-semibold text-sm text-white disabled:opacity-60"
                   style={{ background: "#7c3aed", whiteSpace: "nowrap" }}
                 >
-                  {waitlistState === "loading" ? "…" : "Join Waitlist"}
+                  {waitlistState === "loading" ? "..." : "Join Waitlist"}
                 </button>
               </form>
             )}
           </div>
 
           <p className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>
-            Open source · MIT License · Self-hostable
+            Open source Â· MIT License Â· Self-hostable
           </p>
         </motion.div>
       </main>
 
-      {/* Stats ring — bottom right */}
+      {/* Stats ring â€” bottom right */}
       <div className="absolute bottom-8 right-8 z-30">
         <div className="relative w-20 h-20 flex items-center justify-center">
           <PulsingBorder
@@ -295,9 +283,15 @@ export function Hero() {
             <defs>
               <path id="stats-circle" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0" />
             </defs>
-            <text style={{ fontSize: "8.5px", fill: "rgba(255,255,255,0.7)", fontFamily: "'IBM Plex Mono',monospace" }}>
+            <text
+              style={{
+                fontSize: "8.5px",
+                fill: "rgba(255,255,255,0.7)",
+                fontFamily: "'IBM Plex Mono',monospace",
+              }}
+            >
               <textPath href="#stats-circle" startOffset="0%">
-                ? 16.7k Stars • 81.6% Accuracy • &lt;50ms Speed • Open Source •
+                16.7k Stars - 81.6% Accuracy - 50ms Speed - Open Source -
               </textPath>
             </text>
           </motion.svg>
