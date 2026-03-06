@@ -1,23 +1,54 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "rem-memory"
 version = "0.1.0"
-description = "Recursive Episodic Memory for AI Agents"
+description = "Recursive Episodic Memory for AI Agents — persistent memory infrastructure"
 readme = "README.md"
 requires-python = ">=3.9"
-authors = [{ name = "REM Team" }]
-dependencies = [
-  "httpx>=0.26",
-  "pydantic>=2.0",
+license = {text = "MIT"}
+authors = [{name = "Your Name", email = "you@example.com"}]
+keywords = ["ai", "memory", "agents", "llm", "rag", "episodic-memory"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
-[project.urls]
-Homepage = "https://github.com/yourusername/rem"
-Repository = "https://github.com/yourusername/rem"
+dependencies = [
+    "httpx>=0.26.0",
+    "pydantic>=2.0.0",
+]
 
 [project.optional-dependencies]
-langchain = ["langchain>=0.2.0"]
+langchain = ["langchain>=0.1.0", "langchain-core>=0.1.0"]
+autogen = ["pyautogen>=0.2.0"]
+all = ["rem-memory[langchain,autogen]"]
+dev = ["pytest", "pytest-asyncio", "respx", "black", "ruff", "mypy"]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["rem_memory*"]
+[project.urls]
+Homepage = "https://rem.ai"
+Documentation = "https://rem.ai/docs"
+Repository = "https://github.com/yourusername/rem"
+"Bug Tracker" = "https://github.com/yourusername/rem/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["rem_memory"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+
 
