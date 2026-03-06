@@ -1,0 +1,23 @@
+[project]
+name = "rem-memory"
+version = "0.1.0"
+description = "Recursive Episodic Memory for AI Agents"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "REM Team" }]
+dependencies = [
+  "httpx>=0.26",
+  "pydantic>=2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/rem"
+Repository = "https://github.com/yourusername/rem"
+
+[project.optional-dependencies]
+langchain = ["langchain>=0.2.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rem_memory*"]
+

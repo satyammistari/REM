@@ -1,0 +1,43 @@
+# REM — Cursor Rules
+# These rules guide Cursor AI when working in this repository.
+
+## Project Structure
+- `go-api/`        — Go 1.24 REST API (Fiber v2)
+- `python-worker/` — FastAPI + Celery async worker
+- `dashboard/`     — Next.js 14 dashboard (TypeScript, Tailwind)
+- `sdk/python/`    — Python SDK (`rem_memory`)
+- `scripts/`       — DB init / seed scripts
+- `docs/`          — Documentation
+
+## Go API Rules
+- Package name for handlers: `handlers` (inside `internal/api/handlers/`)
+- Package name for middleware: `middleware`
+- Always use `*zap.Logger` for structured logging, never `fmt.Println`
+- Return errors with `handlers.jsonError(c, status, message)`
+- All new routes must be registered in `internal/api/router.go`
+- Use `deps *handlers.Dependencies` for dependency injection — no global state
+- Services live in `internal/services/`; DB clients in `internal/db/<engine>/`
+
+## Python Worker Rules
+- All async tasks: Celery in `workers/tasks.py`, call service methods from `services/`
+- LLM calls go through `services/llm_service.py` — never call OpenAI directly in handlers
+- Consolidation pipeline: `clusterer.py` → `compressor.py`
+- Use `httpx.AsyncClient` for external HTTP calls; always set a timeout
+
+## Dashboard Rules
+- All pages are under `src/app/dashboard/` and are `"use client"` where state is needed
+- CSS custom properties (defined in `globals.css`) must be used for all colours — no hardcoded hex
+- Tailwind utility classes are for layout/spacing only; colours come from CSS vars
+- Hooks live in `src/lib/hooks/`; shared types in `src/lib/types.ts`
+- Components are organised by domain: `ui/`, `landing/`, `dashboard/`, `episodes/`, `graph/`, `semantic/`, `playground/`
+
+## SDK Rules
+- Public API surface lives in `rem_memory/client.py`
+- All types in `rem_memory/types.py`; keep them in sync with Go domain types
+- Integrations (LangChain, AutoGen) are thin adapters — no business logic
+- Everything exported from `rem_memory/__init__.py`
+
+## General
+- No secrets in source code; use `.env` / environment variables
+- All environment variable names are documented in `.env.example`
+- Prefer explicit imports over wildcard imports

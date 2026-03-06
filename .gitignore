@@ -1,0 +1,69 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build output
+go-api/bin/
+go-api/tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+.Python
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+dashboard/.next/
+dashboard/out/
+dashboard/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+*.coverprofile
+htmlcov/
+.coverage
+
+# Compiled / generated
+*.pb.go
+*.pb.gw.go
+
+# Docker
+.dockerignore
+
+# Misc
+*.tmp
+*.bak
