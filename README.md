@@ -25,13 +25,13 @@ REM is built to fix that. It gives your agents:
 
 ### Comparison
 
-| Feature                 | Context Window | Mem0 | Zep | **REM** |
-|-------------------------|----------------|------|-----|---------|
-| Persistent episodes     | ❌             | ✅   | ✅  | ✅      |
-| Recursive consolidation | ❌             | ❌   | ❌  | **✅**  |
-| Causal episode graph    | ❌             | ❌   | ❌  | **✅**  |
-| Forgetting policy       | Manual         | Some | Some| **First‑class** |
-| Self‑evolving memories  | ❌             | ❌   | ❌  | **✅**  |
+| Feature                  | **REM** |
+|------------------------- |---------|
+| Persistent episodes      | ✅      |
+| Recursive consolidation  | **✅**  |
+| Causal episode graph     | **✅**  |
+| Forgetting policy        | **First‑class** |
+| Self‑evolving memories   | **✅**  |
 
 REM is designed as **infrastructure**, not a toy demo. It is the memory layer you wire into every agent you run in production.
 
